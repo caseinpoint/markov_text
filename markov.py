@@ -16,9 +16,9 @@ class MarkovLink:
 
 
 class MarkovChain:
-	def __init__(self, ngram: int = 2) -> None:
+	def __init__(self, ngram: int = 2, chain: dict = None) -> None:
 		self.ngram = ngram
-		self.chain = {}
+		self.chain = {} if chain is None else chain
 
 	def train(self, src: str) -> None:
 		"""Train Markov chain on src string."""
@@ -54,7 +54,8 @@ class MarkovChain:
 		"""Pickle Markov chain and save to file_path."""
 
 		with open(file=file_path, mode='wb') as f:
-			pickle.dump(obj=self, file=f)
+			obj = {'ngram': self.ngram, 'chain': self.chain}
+			pickle.dump(obj=obj, file=f)
 
 		print(f'Saved to: {file_path}')
 
@@ -63,11 +64,38 @@ class MarkovChain:
 		"""Load pickled Markov chain from file_path."""
 
 		with open(file=file_path, mode='rb') as f:
-			markov_chain = pickle.load(file=f)
+			obj = pickle.load(file=f)
 
-		return markov_chain
+		return cls(ngram=obj['ngram'], chain=obj['chain'])
 
 	def capital_keys(self) -> list[tuple]:
 		"""Get all keys that begin with a capital letter."""
 
 		return [key for key,link in self.chain.items() if link.is_cap]
+	
+	def generate(self, start_cap: bool = True) -> str:
+		"""Generate text of longest length possible."""
+
+		words = []
+
+		if start_cap:
+			first_key = choice(self.capital_keys())
+		else:
+			first_key = choice(list(self.chain.keys()))
+
+		words.extend(first_key)
+
+		next_word = choice(list(self.chain[first_key].word_weights.elements()))
+
+		words.append(next_word)
+
+		next_key = tuple(words[-1 * self.ngram:])
+
+		while next_key in self.chain:
+			next_word = choice(list(self.chain[next_key].word_weights.elements()))
+
+			words.append(next_word)
+
+			next_key = tuple(words[-1 * self.ngram:])
+
+		return ' '.join(words)
