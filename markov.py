@@ -4,6 +4,7 @@ from glob import iglob
 import pickle
 from os import PathLike
 from secrets import choice
+from typing import Any
 
 
 @dataclass
@@ -73,7 +74,7 @@ class MarkovChain:
 
 		return [key for key,link in self.chain.items() if link.is_cap]
 	
-	def generate(self, first_key: tuple = None, start_cap: bool = True) -> str:
+	def generate(self, first_key: tuple[str] = None, start_cap: bool = True) -> Any:
 		"""Generate text of longest length possible."""
 
 		# error handling
@@ -101,3 +102,33 @@ class MarkovChain:
 			yield next_word
 
 			next_key = next_key[1:] + (next_word,)
+
+	def gen_words(self, num_words: int, first_key: tuple[str] = None, start_cap: bool = True) -> str:
+		"""Generate up to num_words length of text."""
+
+		words = []
+
+		for word in self.generate(first_key=first_key, start_cap=start_cap):
+			words.append(word)
+
+			if len(words) >= num_words:
+				break
+
+		return ' '.join(words)
+
+	def gen_chars(self, num_chars: int = 280, first_key: tuple[str] = None, start_cap: bool = True) -> str:
+		"""Generate up to num_chars length of text."""
+
+		words = []
+		total_chars = 0
+
+		for word in self.generate(first_key=first_key, start_cap=start_cap):
+			total_chars += len(word)
+
+			# account for 1 space between each word
+			if total_chars + len(words) - 1 > num_chars:
+				break
+
+			words.append(word)
+
+		return ' '.join(words)
