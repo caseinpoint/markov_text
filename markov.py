@@ -73,29 +73,31 @@ class MarkovChain:
 
 		return [key for key,link in self.chain.items() if link.is_cap]
 	
-	def generate(self, start_cap: bool = True) -> str:
+	def generate(self, first_key: tuple = None, start_cap: bool = True) -> str:
 		"""Generate text of longest length possible."""
 
-		words = []
+		# error handling
+		if first_key is not None and len(first_key) != self.ngram:
+			raise KeyError(f'Key {first_key} must be of length {self.ngram}.')
+		if first_key is not None and first_key not in self.chain:
+			raise KeyError(f'Key {first_key} not in Markov chain.')
 
-		if start_cap:
+		# pick random first key if not provided
+		if first_key is None and start_cap:
 			first_key = choice(self.capital_keys())
-		else:
+		elif first_key is None:
 			first_key = choice(list(self.chain.keys()))
 
-		words.extend(first_key)
+		for word in first_key:
+			yield word
 
 		next_word = choice(list(self.chain[first_key].word_weights.elements()))
+		yield next_word
 
-		words.append(next_word)
-
-		next_key = tuple(words[-1 * self.ngram:])
+		next_key = first_key[1:] + (next_word,)
 
 		while next_key in self.chain:
 			next_word = choice(list(self.chain[next_key].word_weights.elements()))
+			yield next_word
 
-			words.append(next_word)
-
-			next_key = tuple(words[-1 * self.ngram:])
-
-		return ' '.join(words)
+			next_key = next_key[1:] + (next_word,)
