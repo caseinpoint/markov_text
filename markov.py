@@ -1,7 +1,9 @@
 from collections import Counter
 from dataclasses import dataclass, field
 from glob import iglob
+import pickle
 from os import PathLike
+from secrets import choice
 
 
 @dataclass
@@ -40,15 +42,32 @@ class MarkovChain:
 			text = f.read()
 
 		self.train(src=text)
+		print(f'Trained on: {file_path}')
 
-	def train_on_directory(self, dir_path: PathLike, recursive: bool = False) -> None:
+	def train_on_dir(self, dir_path: PathLike, recursive: bool = False) -> None:
 		"""Read every file in dir_path and train chain on text."""
 
 		for file_path in iglob(pathname=dir_path, recursive=recursive):
-			print(file_path)
 			self.train_on_file(file_path=file_path)
 
-	def capital_keys(self) -> list:
+	def save(self, file_path: PathLike) -> None:
+		"""Pickle Markov chain and save to file_path."""
+
+		with open(file=file_path, mode='wb') as f:
+			pickle.dump(obj=self, file=f)
+
+		print(f'Saved to: {file_path}')
+
+	@classmethod
+	def load(cls, file_path: PathLike) -> 'MarkovChain':
+		"""Load pickled Markov chain from file_path."""
+
+		with open(file=file_path, mode='rb') as f:
+			markov_chain = pickle.load(file=f)
+
+		return markov_chain
+
+	def capital_keys(self) -> list[tuple]:
 		"""Get all keys that begin with a capital letter."""
 
 		return [key for key,link in self.chain.items() if link.is_cap]
