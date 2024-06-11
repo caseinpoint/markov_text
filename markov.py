@@ -31,7 +31,7 @@ class MarkovChain:
         """Train Markov chain on src string."""
 
         # lower case and split src in to words, don't preserve whitespace or
-        # punctuation (except hyphens and apostrophes) or)
+        # punctuation (except hyphens and apostrophes)
         words = MarkovChain._word_regex.findall(src.lower())
         print(f'# words: {len(words)}')
 
