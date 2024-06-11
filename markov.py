@@ -3,20 +3,27 @@ from dataclasses import dataclass, field
 from glob import iglob
 import pickle
 from os import PathLike
+from re import compile
 from secrets import choice
 from typing import Any
 
 
 @dataclass
-class MarkovLink:
-    """Class for storing the values for each key in a Markov chain."""
+class MarkovWord:
+    """A class for storing a word and its weight."""
 
-    is_cap: bool = False
-    # count number of times each word follows the key in source text
-    word_weights: Counter = field(default_factory=Counter)
+    word: str
+    weight: int = 1
+
+    def __post_init__(self):
+        self.word = self.word.lower()
 
 
 class MarkovChain:
+    """A text Markov chain."""
+
+    _word_regex = compile(r'[\w-]+(?:\'\w+)?')
+
     def __init__(self, ngram: int = 2, chain: dict = None) -> None:
         self.ngram = ngram
         self.chain = {} if chain is None else chain
@@ -24,29 +31,63 @@ class MarkovChain:
     def train(self, src: str) -> None:
         """Train Markov chain on src string."""
 
-        # split src in to words, preserve punctuation but not whitespace
-        words = src.split()
+        # lower case and split src in to words, don't preserve whitespace or
+        # punctuation (except hyphens and apostrophes) or)
+        words = MarkovChain._word_regex.findall(src.lower())
+        print(f'# words: {len(words)}')
 
+        # count new keys
+        new_keys = 0
+
+        # loop over all words
         for i in range(len(words) - self.ngram):
+            # create key of length self.ngram
             key = tuple(words[i : i + self.ngram])
+            next_word = words[i + self.ngram]
 
             if key not in self.chain:
-                is_cap = key[0][0].isupper()
-                self.chain[key] = MarkovLink(is_cap=is_cap)
+                self.chain[key] = []
+                new_keys += 1
 
-            self.chain[key].word_weights.update({words[i + self.ngram]: 1})
+            # find existing MarkovWord for next_word and increment its weight
+            nw_not_found = True
+            for mw in self.chain[key]:
+                if mw.word == next_word:
+                    mw.weight += 1
+                    nw_not_found = False
+                    break
+
+            # if next_word is not found, add it with weight of 1
+            if nw_not_found:
+                mw = MarkovWord(word=next_word, weight=1)
+                self.chain[key].append(mw)
+
+        print(f'# new keys added: {new_keys}')
+
+        # loop over all lists of next words in self.chain and sort them,
+        # descending by weight. this is slow in training, but fast in
+        # generation
+        for mw_list in self.chain.values():
+            mw_list.sort(key=lambda mw: mw.weight, reverse=True)
+
+        print('Training complete\n')
+
 
     def train_on_file(self, file_path: PathLike) -> None:
         """Read file_path and train chain on text."""
+
+        print(f'Training on "{file_path}"')
 
         with open(file=file_path, mode="r") as f:
             text = f.read()
 
         self.train(src=text)
-        print(f"Trained on: {file_path}")
 
     def train_on_dir(self, dir_path: PathLike, recursive: bool = False) -> None:
-        """Read every file in dir_path and train chain on text."""
+        """Read every file in dir_path and train chain on text.
+        
+        Absolute or relative path. Can contain shell-style wildcards.
+        ex: train_on_dir('./training_data/*.txt')"""
 
         for file_path in iglob(pathname=dir_path, recursive=recursive):
             self.train_on_file(file_path=file_path)
