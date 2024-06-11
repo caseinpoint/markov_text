@@ -109,7 +109,16 @@ class MarkovChain:
 
         return cls(ngram=obj["ngram"], chain=obj["chain"])
 
-    def get_next_words(self, key: tuple) -> list[str]:
+    def get_words(self, key: tuple) -> list[str]:
+        """Get a list of next words for a key."""
+
+        # error handling
+        if key not in self.chain:
+            raise KeyError(f"Key {key} not in Markov chain.")
+
+        return [mw.word for mw in self.chain[key]]
+
+    def get_words_weighted(self, key: tuple) -> list[str]:
         """Get a list of next words multiplied by weight for a key."""
 
         # error handling
@@ -140,13 +149,13 @@ class MarkovChain:
         for word in first_key:
             yield word
 
-        next_word = choice(self.get_next_words(key=first_key))
+        next_word = choice(self.get_words_weighted(key=first_key))
         yield next_word
 
         next_key = first_key[1:] + (next_word,)
 
         while next_key in self.chain:
-            next_word = choice(self.get_next_words(key=next_key))
+            next_word = choice(self.get_words_weighted(key=next_key))
             yield next_word
 
             next_key = next_key[1:] + (next_word,)
