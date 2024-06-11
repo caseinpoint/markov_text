@@ -85,7 +85,7 @@ class MarkovChain:
 
     def train_on_dir(self, dir_path: PathLike, recursive: bool = False) -> None:
         """Read every file in dir_path and train chain on text.
-        
+
         Absolute or relative path. Can contain shell-style wildcards.
         ex: train_on_dir('./training_data/*.txt')"""
 
@@ -110,12 +110,18 @@ class MarkovChain:
 
         return cls(ngram=obj["ngram"], chain=obj["chain"])
 
-    def capital_keys(self) -> list[tuple]:
-        """Get all keys that begin with a capital letter."""
+    def get_next_words(self, key: tuple) -> list[str]:
+        """Get a list of next words multiplied by weight for a key."""
 
-        return [key for key, link in self.chain.items() if link.is_cap]
+        next_words = []
 
-    def generate(self, first_key: tuple[str] = None, start_cap: bool = True) -> Any:
+        for mw in self.chain[key]:
+            for _ in range(mw.weight):
+                next_words.append(mw.word)
+
+        return next_words
+
+    def generate(self, first_key: tuple[str] = None) -> Any:
         """Generate text of longest length possible."""
 
         # error handling
@@ -125,33 +131,29 @@ class MarkovChain:
             raise KeyError(f"Key {first_key} not in Markov chain.")
 
         # pick random first key if not provided
-        if first_key is None and start_cap:
-            first_key = choice(self.capital_keys())
-        elif first_key is None:
+        if first_key is None:
             first_key = choice(list(self.chain.keys()))
 
         for word in first_key:
             yield word
 
-        next_word = choice(list(self.chain[first_key].word_weights.elements()))
+        next_word = choice(self.get_next_words(key=first_key))
         yield next_word
 
         next_key = first_key[1:] + (next_word,)
 
         while next_key in self.chain:
-            next_word = choice(list(self.chain[next_key].word_weights.elements()))
+            next_word = choice(self.get_next_words(key=next_key))
             yield next_word
 
             next_key = next_key[1:] + (next_word,)
 
-    def get_words(
-        self, num_words: int, first_key: tuple[str] = None, start_cap: bool = True
-    ) -> str:
+    def get_words(self, num_words: int, first_key: tuple[str] = None) -> str:
         """Return up to num_words length of text."""
 
         words = []
 
-        for word in self.generate(first_key=first_key, start_cap=start_cap):
+        for word in self.generate(first_key=first_key):
             words.append(word)
 
             if len(words) >= num_words:
@@ -159,15 +161,13 @@ class MarkovChain:
 
         return " ".join(words)
 
-    def get_chars(
-        self, num_chars: int = 280, first_key: tuple[str] = None, start_cap: bool = True
-    ) -> str:
+    def get_chars(self, num_chars: int = 280, first_key: tuple[str] = None) -> str:
         """Return up to num_chars length of text."""
 
         words = []
         total_chars = 0
 
-        for word in self.generate(first_key=first_key, start_cap=start_cap):
+        for word in self.generate(first_key=first_key):
             total_chars += len(word)
 
             # account for 1 space between each word
