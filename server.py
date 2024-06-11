@@ -1,6 +1,8 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, session
+from os import environ
 
 app = Flask(__name__)
+app.secret_key = environ.get('APP_SECRET', 'super_secret_key')
 
 @app.route('/base')
 def test():
