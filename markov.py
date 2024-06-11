@@ -1,4 +1,3 @@
-from collections import Counter
 from dataclasses import dataclass, field
 from glob import iglob
 import pickle
@@ -112,6 +111,10 @@ class MarkovChain:
 
     def get_next_words(self, key: tuple) -> list[str]:
         """Get a list of next words multiplied by weight for a key."""
+
+        # error handling
+        if key not in self.chain:
+            raise KeyError(f"Key {key} not in Markov chain.")
 
         next_words = []
 
