@@ -63,8 +63,8 @@ class MarkovChain:
 
 		print(f'# new keys added: {new_keys}')
 
-		# loop over all lists of next words in self.chain and sort them,
-		# descending by weight. this is slow in training, but fast in
+		# loop over all lists of next words in self.chain and sort them
+		# by weight, descending. this is slow in training, but fast in
 		# generation
 		for mw_list in self.chain.values():
 			mw_list.sort(key=lambda mw: mw.weight, reverse=True)
