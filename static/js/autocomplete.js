@@ -31,8 +31,10 @@ function handleClick(evt) {
 
 function createBtns(words) {
 	if (words.length > 4) {
+		// show more results div
 		moreDiv.classList.remove('d-none');
 	} else {
+		// hide more results div
 		moreDiv.classList.add('d-none');
 	}
 
@@ -102,6 +104,9 @@ async function handleInput(evt) {
 		for (let btn of document.querySelectorAll('.res_btn')) {
 			btn.remove();
 		}
+
+		// hide more results div
+		moreDiv.classList.add('d-none');
 	}
 }
 
