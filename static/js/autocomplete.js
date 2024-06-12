@@ -3,6 +3,8 @@
 // regex for words with possible hyphens and apostrophes
 const wordRegex = /[\w-]+('[\w]+)?/g;
 
+// DOM elements
+const authorSel = document.getElementById('author_sel');
 const textNpt = document.getElementById('text_npt');
 
 function handleKeyUp(evt) {
@@ -17,7 +19,7 @@ function handleKeyUp(evt) {
 
     let words = value.match(wordRegex);
     if (words !== null) {
-        // get last 2 words and lower case them
+        // get last 2 words and lower-case them
         words = words.slice(-2).map((w) => w.toLowerCase());
     }
     console.log(words);
