@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, jsonify, render_template, request
 from markov import MarkovChain as MC, MarkovWord
 # from os import environ
 
@@ -17,6 +17,21 @@ def index():
 	"""Render the home page."""
 
 	return render_template('index.html')
+
+
+@app.route('/api/suggest/<author>.json', methods=['POST'])
+def suggest(author):
+	"""Return a list of words based on author's Markov chain."""
+
+	author_mc = AUTHORS[author.lower()]
+	key = tuple(request.json.get('key'))
+
+	try:
+		words = author_mc.get_words(key=key)
+	except KeyError:
+		return jsonify({'success': False, 'error': 'Key not found'})
+	
+	return jsonify({'success': True, 'words': words})
 
 
 # @app.route('/base')

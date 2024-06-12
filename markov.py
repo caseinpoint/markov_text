@@ -162,7 +162,7 @@ class MarkovChain:
 
 			next_key = next_key[1:] + (next_word,)
 
-	def get_words(self, num_words: int, first_key: tuple[str] = None) -> str:
+	def gen_words(self, num_words: int, first_key: tuple[str] = None) -> str:
 		"""Return up to num_words length of text."""
 
 		words = []
@@ -175,7 +175,7 @@ class MarkovChain:
 
 		return " ".join(words)
 
-	def get_chars(self, num_chars: int = 280, first_key: tuple[str] = None) -> str:
+	def gen_chars(self, num_chars: int = 280, first_key: tuple[str] = None) -> str:
 		"""Return up to num_chars length of text."""
 
 		words = []
