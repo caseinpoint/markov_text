@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}TypeLike | Home{% endblock %}
+
+{% block body %}
+<header>
+	<h1>Welcome to TypeLike</h1>
+	<p>Text autocomplete based on the word frequencies of certain authors.</p>
+</header>
+
+<div class="row justify-content-center">
+	<div class="col border border-3 rounded py-2">
+		<div class="input-group mb-2">
+			<span class="input-group-text">TypeLike the author of your choice:</span>
+			<select id="author_sel" class="form-select">
+				<option value="austen" disabled>Jane Austen</option>
+				<option value="shakespeare" selected>William Shakespeare</option>
+				<option value="wilde" disabled>Oscar Wilde</option>
+			</select>
+		</div>
+
+		<textarea
+			id="text_npt"
+			class="form-control"
+			rows="12"
+			placeholder="Start typing..."
+		></textarea>
+
+		<div id="words_res" class="row justify-content-evenly gx-1 p-1 border rounded">
+			<button id="no_res_btn" class="col-3 btn btn-outline-primary res_btn" type="button">No suggestions...</button>
+		</div>
+	</div>
+	<div id="more_res" class="row justify-content-evenly gx-1 p-1 border rounded d-none">
+		<!-- <button class="col-3 btn btn-outline-secondary res_btn" type="button">test</button> -->
+		</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/autocomplete.js"></script>
+{% endblock %}

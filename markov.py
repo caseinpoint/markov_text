@@ -73,7 +73,9 @@ class MarkovChain:
 
 
 	def train_on_file(self, file_path: PathLike) -> None:
-		"""Read file_path and train chain on text."""
+		"""Read file_path and train chain on text.
+		
+		Absolute or relative path."""
 
 		print(f'Training on "{file_path}"')
 
