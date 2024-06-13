@@ -9,6 +9,7 @@ app = Flask(__name__)
 # Markov chains
 AUTHORS = {
 	'shakespeare': MC.load('./training_data/pickle/shakespeare2.pickle'),
+	'wilde': MC.load('./training_data/pickle/wilde2.pickle'),
 }
 
 

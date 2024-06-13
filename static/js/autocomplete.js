@@ -14,8 +14,10 @@ const noResBtn = document.getElementById('no_res_btn');
 const primaryClasses = ['col-3', 'btn', 'btn-outline-primary', 'res_btn'];
 const primarySups = ['TAB', 'CTRL+2', 'CTRL+3', 'CTRL+4'];
 const secondClasses = ['col-2', 'btn', 'btn-outline-secondary', 'res_btn'];
+let shift = false;
+let caps = false;
 
-
+// event handlers
 function handleClick(evt) {
 	// insert a space before the word if there isn't one already
 	const insertSpace = textNpt.value.match(/\s$/) === null ? ' ' : '';
@@ -111,7 +113,25 @@ async function handleInput(evt) {
 }
 
 
+function titleBtns() {
+
+}
+
+
+function capitalBtns() {
+	// for (let btn of document.querySelectorAll('.res_btn')) {
+	// 	const word = caps ? btn.value.toUpperCase() : btn.value.toLowerCase();
+
+	// 	btn.value = word;
+	// 	btn.textContent = word;
+	// }
+
+	// caps = !caps;
+}
+
+
 function handleKeyDown(evt) {
+	// console.log(evt);
 	let btn;
 
 	if (evt.key === "Tab") {
@@ -132,5 +152,20 @@ function handleKeyDown(evt) {
 	}
 }
 
+
+function handleKeyUp(evt) {
+	if (evt.key === 'Shift') {
+		titleBtns();
+	} else if (evt.key === 'CapsLock') {
+		capitalBtns();
+	}
+}
+
+
+// add event listeners
 textNpt.addEventListener('input', handleInput);
 textNpt.addEventListener("keydown", handleKeyDown);
+textNpt.addEventListener("keydup", handleKeyUp);
+
+// fire the text area event if the author select changes
+authorSel.addEventListener('change', () => {textNpt.dispatchEvent(new Event('input', {bubbles: true}));});
