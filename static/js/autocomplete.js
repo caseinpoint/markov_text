@@ -14,20 +14,27 @@ const noResBtn = document.getElementById('no_res_btn');
 
 
 // utilities for button elements
-const primaryClasses = ['col-3', 'btn', 'btn-outline-primary', 'res_btn'];
+const primaryClasses = ['col-3', 'p-1', 'btn', 'btn-outline-primary', 'res_btn'];
 const primarySups = ['TAB', 'CTRL+2', 'CTRL+3', 'CTRL+4'];
-const secondClasses = ['col-2', 'btn', 'btn-outline-success', 'res_btn'];
+const secondClasses = ['col-2', 'p-1', 'btn', 'btn-outline-success', 'res_btn'];
 let SHIFT = false;
 let CAPS = false;
 
 
 // event handlers and functions
 function handleClick(evt) {
+	let target = evt.target;
+
+	// handle if child <sup> is clicked
+	if (evt.target.nodeName === 'SUP') {
+		target = evt.target.parentNode;
+	}
+
 	// insert a space before the word if there isn't one already
 	const insertSpace = textNpt.value.match(/\s$/) === null ? ' ' : '';
 
 	// add word to text area
-	textNpt.value += insertSpace + evt.target.value + ' ';
+	textNpt.value += insertSpace + target.value + ' ';
 
 	// focus text area and fire event to update suggestions
 	textNpt.focus()
