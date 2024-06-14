@@ -1,7 +1,9 @@
 "use strict";
 
+
 // regex for words with possible hyphens and apostrophes
 const wordRegex = /[\w-]+('[\w]+)?/g;
+
 
 // DOM elements
 const authorSel = document.getElementById("author_sel");
@@ -10,12 +12,14 @@ const wordsDiv = document.getElementById("words_res");
 const moreDiv = document.getElementById("more_res");
 const noResBtn = document.getElementById('no_res_btn');
 
+
 // utilities for button elements
 const primaryClasses = ['col-3', 'btn', 'btn-outline-primary', 'res_btn'];
 const primarySups = ['TAB', 'CTRL+2', 'CTRL+3', 'CTRL+4'];
 const secondClasses = ['col-2', 'btn', 'btn-outline-secondary', 'res_btn'];
-let shift = false;
-let caps = false;
+let SHIFT = false;
+let CAPS = false;
+
 
 // event handlers
 function handleClick(evt) {
@@ -23,11 +27,38 @@ function handleClick(evt) {
 	const insertSpace = textNpt.value.match(/\s$/) === null ? ' ' : '';
 
 	// add word to text area
-	textNpt.value += insertSpace + evt.target.value;
+	textNpt.value += insertSpace + evt.target.value + ' ';
 
 	// focus text area and fire event to update suggestions
 	textNpt.focus()
 	textNpt.dispatchEvent(new Event('input', {bubbles: true}));
+}
+
+
+function capBtns(key) {
+	for (let btn of document.querySelectorAll('.res_btn')) {
+		let value = btn.value;
+		let innerHTML = btn.innerHTML.split(' ');
+
+		if (key === 'Shift'){
+			if (SHIFT) {
+				value = value[0].toUpperCase() + value.slice(1);
+			} else {
+				value = value[0].toLowerCase() + value.slice(1);
+			}
+		} else if (key === 'CapsLock') {
+			if (CAPS) {
+				value = value.toUpperCase();
+			} else {
+				value = value.toLowerCase();
+			}
+		}
+
+		btn.value = value;
+
+		innerHTML[0] = value;
+		btn.innerHTML = innerHTML.join(' ');
+	}
 }
 
 
@@ -59,10 +90,25 @@ function createBtns(words) {
 			moreDiv.append(newBtn);
 		}
 	}
+
+	if (CAPS) {
+		capBtns('CapsLock');
+	}
 }
 
 
 async function handleInput(evt) {
+	// show the no results button
+	noResBtn.classList.remove('d-none');
+
+	// remove any previous suggestions
+	for (let btn of document.querySelectorAll('.res_btn')) {
+		btn.remove();
+	}
+
+	// hide more results div
+	moreDiv.classList.add('d-none');
+
 	const value = evt.target.value;
 
 	let words = value.match(wordRegex);
@@ -84,54 +130,21 @@ async function handleInput(evt) {
 
 		const result = await response.json();
 
-		// remove any previous suggestions
-		for (let btn of document.querySelectorAll('.res_btn')) {
-			btn.remove();
-		}
-
 		if (result.success) {
 			// hide no results button
 			noResBtn.classList.add('d-none');
 
 			createBtns(result.words);
-		} else {
-			// show the no results button
-			noResBtn.classList.remove('d-none');
-		}
-	} else {
-		// show the no results button
-		noResBtn.classList.remove('d-none');
-
-		// remove any previous suggestions
-		for (let btn of document.querySelectorAll('.res_btn')) {
-			btn.remove();
 		}
 
-		// hide more results div
-		moreDiv.classList.add('d-none');
+		if (SHIFT) {
+			SHIFT = false;
+		}
 	}
 }
 
 
-function titleBtns() {
-
-}
-
-
-function capitalBtns() {
-	// for (let btn of document.querySelectorAll('.res_btn')) {
-	// 	const word = caps ? btn.value.toUpperCase() : btn.value.toLowerCase();
-
-	// 	btn.value = word;
-	// 	btn.textContent = word;
-	// }
-
-	// caps = !caps;
-}
-
-
 function handleKeyDown(evt) {
-	// console.log(evt);
 	let btn;
 
 	if (evt.key === "Tab") {
@@ -145,6 +158,12 @@ function handleKeyDown(evt) {
 		btn = document.querySelector('#w_btn_2');
 	} else if (evt.ctrlKey && evt.key === '4') {
 		btn = document.querySelector('#w_btn_3');
+	} else if (evt.key === 'Shift') {
+		SHIFT = !SHIFT;
+		capBtns('Shift');
+	} else if (evt.key === 'CapsLock') {
+		CAPS = !CAPS
+		capBtns('CapsLock');
 	}
 
 	if (btn !== undefined) {
@@ -153,19 +172,9 @@ function handleKeyDown(evt) {
 }
 
 
-function handleKeyUp(evt) {
-	if (evt.key === 'Shift') {
-		titleBtns();
-	} else if (evt.key === 'CapsLock') {
-		capitalBtns();
-	}
-}
-
-
 // add event listeners
 textNpt.addEventListener('input', handleInput);
 textNpt.addEventListener("keydown", handleKeyDown);
-textNpt.addEventListener("keydup", handleKeyUp);
 
 // fire the text area event if the author select changes
 authorSel.addEventListener('change', () => {textNpt.dispatchEvent(new Event('input', {bubbles: true}));});

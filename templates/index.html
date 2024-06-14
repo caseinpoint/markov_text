@@ -1,11 +1,8 @@
-{% extends 'base.html' %}
-
-{% block title %}TypeLike | Home{% endblock %}
-
-{% block body %}
+{% extends 'base.html' %} {% block title %}TypeLike | Home{% endblock %} {%
+block body %}
 <header>
 	<h1>Welcome to TypeLike</h1>
-	<p>Text autocomplete based on the word frequencies of certain authors.</p>
+	<p class="h4">Text autocomplete based on the word frequencies of certain authors.</p>
 </header>
 
 <div class="row justify-content-center">
@@ -13,8 +10,8 @@
 		<div class="input-group mb-2">
 			<span class="input-group-text">TypeLike the author of your choice:</span>
 			<select id="author_sel" class="form-select">
-				<option value="austen" disabled>Jane Austen</option>
-				<option value="shakespeare" selected>William Shakespeare</option>
+				<option value="austen" selected>Jane Austen</option>
+				<option value="shakespeare">William Shakespeare</option>
 				<option value="wilde">Oscar Wilde</option>
 			</select>
 		</div>
@@ -26,12 +23,25 @@
 			placeholder="Start typing..."
 		></textarea>
 
-		<div id="words_res" class="row justify-content-evenly gx-1 p-1 border rounded">
-			<button id="no_res_btn" class="col-3 btn btn-outline-primary" type="button">No suggestions...</button>
+		<div
+			id="words_res"
+			class="row justify-content-evenly gx-1 p-1 border rounded"
+		>
+			<button
+				id="no_res_btn"
+				class="col-3 btn btn-outline-primary"
+				type="button"
+			>
+				Keep typing...
+			</button>
 		</div>
-		<div id="more_res" class="row justify-content-evenly gx-1 p-1 border rounded d-none"></div>
+		<div
+			id="more_res"
+			class="row justify-content-evenly gx-1 p-1 border rounded d-none"
+		></div>
 	</div>
 </div>
+
 {% endblock %}
 
 {% block script %}
