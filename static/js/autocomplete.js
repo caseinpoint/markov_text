@@ -34,7 +34,7 @@ function handleClick(evt) {
 	const insertSpace = textNpt.value.match(/\s$/) === null ? ' ' : '';
 
 	// add word to text area
-	textNpt.value += insertSpace + target.value + ' ';
+	textNpt.value += insertSpace + target.value;
 
 	// focus text area and fire event to update suggestions
 	textNpt.focus()
