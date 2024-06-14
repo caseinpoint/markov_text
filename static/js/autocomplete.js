@@ -16,12 +16,12 @@ const noResBtn = document.getElementById('no_res_btn');
 // utilities for button elements
 const primaryClasses = ['col-3', 'btn', 'btn-outline-primary', 'res_btn'];
 const primarySups = ['TAB', 'CTRL+2', 'CTRL+3', 'CTRL+4'];
-const secondClasses = ['col-2', 'btn', 'btn-outline-secondary', 'res_btn'];
+const secondClasses = ['col-2', 'btn', 'btn-outline-success', 'res_btn'];
 let SHIFT = false;
 let CAPS = false;
 
 
-// event handlers
+// event handlers and functions
 function handleClick(evt) {
 	// insert a space before the word if there isn't one already
 	const insertSpace = textNpt.value.match(/\s$/) === null ? ' ' : '';
@@ -120,25 +120,29 @@ async function handleInput(evt) {
 		const author = authorSel.value.toLowerCase();
 
 		// send last 2 words and author to server
-		const response = await fetch(`/api/suggest/${author}.json`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({key: words})
-		});
-
-		const result = await response.json();
-
-		if (result.success) {
-			// hide no results button
-			noResBtn.classList.add('d-none');
-
-			createBtns(result.words);
-		}
-
-		if (SHIFT) {
-			SHIFT = false;
+		try {
+			const response = await fetch(`/api/suggest/${author}.json`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({key: words})
+			});
+	
+			const result = await response.json();
+	
+			if (result.success) {
+				// hide no results button
+				noResBtn.classList.add('d-none');
+	
+				createBtns(result.words);
+			}
+	
+			if (SHIFT) {
+				SHIFT = false;
+			}
+		} catch (err) {
+			console.log(err);
 		}
 	}
 }
