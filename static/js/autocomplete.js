@@ -1,8 +1,8 @@
 'use strict';
 
 
-// regex for words with possible hyphens and apostrophes
-const wordRegex = /[\w-]+('[\w]+)?/g;
+// regex for words with possible hyphens, accents and apostrophes
+const wordRegex = /[A-Za-zÀ-ÖØ-öø-ÿ-]+('[A-Za-zÀ-ÖØ-öø-ÿ]+)?/g;
 
 
 // DOM elements
