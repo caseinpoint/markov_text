@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 // regex for words with possible hyphens and apostrophes
@@ -135,21 +135,23 @@ async function handleInput(evt) {
 				},
 				body: JSON.stringify({key: words})
 			});
-	
+
 			const result = await response.json();
-	
+
 			if (result.success) {
 				// hide no results button
 				noResBtn.classList.add('d-none');
-	
+
 				createBtns(result.words);
+			} else {
+				console.error(result);
 			}
-	
+
 			if (SHIFT) {
 				SHIFT = false;
 			}
 		} catch (err) {
-			console.log(err);
+			console.error(err);
 		}
 	}
 }
