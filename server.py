@@ -38,7 +38,6 @@ def suggest(author):
 		return jsonify({'success': False, 'error': 'Author not found'})
 
 	key = tuple(request.json.get('key'))
-	print(key)
 
 	try:
 		words = author_mc.get_words(key=key)
