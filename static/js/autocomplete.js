@@ -144,7 +144,7 @@ async function handleInput(evt) {
 
 				createBtns(result.words);
 			} else {
-				console.error(result);
+				// console.error(result);
 			}
 
 			if (SHIFT) {
