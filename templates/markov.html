@@ -1,0 +1,64 @@
+{% extends 'base.html' %} {% block title %} TypeLike | Random {% endblock %} {%
+block body %}
+<header>
+	<h1>TypeLike Random</h1>
+	<p class="h4">
+		Generate random text based on the word frequencies of certain authors.
+	</p>
+</header>
+
+<div class="row justify-content-center">
+	<div class="col-12 mb-3 border border-3 rounded py-2">
+		<form id="random_form">
+			<div class="input-group mb-2">
+				<span class="input-group-text">Generate text based on:</span>
+				<select id="author_sel" class="form-select">
+					<option value="austen" selected>Jane Austen</option>
+					<option value="norton">Andre Alice Norton</option>
+					<option value="shakespeare">William Shakespeare</option>
+					<option value="wilde">Oscar Wilde</option>
+				</select>
+			</div>
+
+			<div class="input-group mb-2">
+				<input
+					type="number"
+					id="num_ipt"
+					min="2"
+					step="1"
+					value="15"
+					class="form-control"
+				/>
+
+				<input
+					type="radio"
+					name="words_chars"
+					id="words_radio"
+					class="btn-check"
+					checked
+				/>
+				<label for="words_radio" class="btn btn-outline-primary">Words</label>
+
+				<input
+					type="radio"
+					name="words_chars"
+					id="chars_radio"
+					class="btn-check"
+				/>
+				<label for="chars_radio" class="btn btn-outline-primary">Characters</label>
+			</div>
+
+			<button type="submit" id="random_btn" class="btn btn-success">Generate</button>
+		</form>
+	</div>
+
+	<div class="col-12">
+		<h2>Output:</h2>
+		<p id="random_opt" class="h5"></p>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/markov.js"></script>
+{% endblock %}
